@@ -1,5 +1,7 @@
+import cn from 'classnames';
 import './styles.css';
-import likeIcon from '../../images/save.svg';
+import { ReactComponent as LikeIcon } from '../../images/save.svg';
+import { calcDiscountPrice, isLiked } from '../../utils/products';
 
 export function Card({
   name,
@@ -7,63 +9,63 @@ export function Card({
   discount,
   wight,
   description,
-  picture,
+  pictures,
+  tags,
+  likes,
+  onProductLike,
+  _id,
+  currentUser,
   ...props
 }) {
 
-  const discount_price = Math.round(price - (price * discount) / 100);
+  const discount_price = calcDiscountPrice(price, discount);
+
+  const like = isLiked(likes, currentUser?._id);
+
+  function handleClickButtonLike() {
+    onProductLike({ likes, _id })
+  }
 
   return (
     <article className="card">
 
-      {/* иконка - скидка */}
       <div className="card__sticky card__sticky_type_top-left">
         {discount !== 0 && (
           <span className="card__discount">{`-${discount}%`}</span>
         )}
+        {tags && tags.map((tagName, index) => (
+          <span key={index} className={cn('tag', { [`tag_type_${tagName}`]: true })}>
+            {tagName}
+          </span>
+        )
+        )}
       </div>
 
-      {/* иконка - лайк */}
       <div className="card__sticky card__sticky_type_top-right">
-        <button className="card__favorite">
-          <img src={likeIcon} alt="" className="card__favorite-icon" />
+      <button className={cn('card__favorite', { 'card__favorite_is-active': like })} onClick={handleClickButtonLike}>
+          <LikeIcon className="card__favorite-icon" />
+          {/* <img src={likeIcon} alt="" className="card__favorite-icon" /> */}
         </button>
       </div>
 
-
-      {/* карточка */}
-      {/* eslint-disable-next-line */}
       <a href="#" className="card__link">
-
-        {/* карточка - картинка */}
-        <img src={picture} alt={name} className="card__image" />
-
-        {/* карточка - описание */}
+        <img src={pictures} alt={name} className="card__image" />
         <div className="card__desc">
-
-          {/* старая цена. подмена класса */}
-          <span className={discount !== 0 ? "card__old-price" : "card__price"}>
-            {price}&nbsp;₽
-          </span>
-
-          {/* дисконт. поведение элемента */}
-          {discount !== 0 && (
-            <span className="card__price card__price_type_discount">
-              {discount_price}&nbsp;₽
-            </span>
+          {discount !== 0 ? (
+            <>
+              <span className="card__old-price">{price}&nbsp;₽</span>
+              <span className="card__price card__price_type_discount">
+                {discount_price}&nbsp;₽
+              </span>
+            </>
+          ) : (
+            <span className="card__price">{price}&nbsp;₽</span>
           )}
-
-          {/* вес */}
           <span className="card__wight">{wight}</span>
-
-          {/* карточка - имя */}
           <h3 className="card__name">{name}</h3>
         </div>
-
       </a>
-
-      {/* кнопка - корзина */}
-      {/* eslint-disable-next-line */}
+      
       <a href="#" className="card__cart btn btn_type_primary">
         В корзину
       </a>
