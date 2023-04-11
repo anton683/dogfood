@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useEventListener, useIsomorphicLayoutEffect } from './index.js'
 
-
 function useElementSize() {
 
     const [ref, setRef] = useState(null)

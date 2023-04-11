@@ -1,15 +1,21 @@
 import cn from 'classnames';
-
 import { calcDiscountPrice, isLiked } from '../../utils/products';
 import { Button } from '../button';
 import s from './styles.module.css';
 import { ReactComponent as LikeIcon } from "../../images/save.svg";
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
+import { useNavigate } from 'react-router';
+import { useContext } from 'react';
+import { UserContext } from '../../contexts/current-user-context';
+import { ContentHeader } from '../content-header';
 
-function Product({ onProductLike, _id, name, pictures, description, discount, price, likes = [], currentUser, reviews }) {
+function Product({ onProductLike, _id, name, pictures, description, discount, price, likes = [], reviews }) {
+    const { currentUser } = useContext(UserContext);
     const discount_price = calcDiscountPrice(price, discount);
     const like = isLiked(likes, currentUser?._id);
+    const navigate = useNavigate();
+
     function handleLikeClick() {
         onProductLike({ likes, _id })
     }
@@ -20,11 +26,10 @@ function Product({ onProductLike, _id, name, pictures, description, discount, pr
 
     return (
         <>
-            <div className={s.header}>
-                <a href="#" className='button-back'>Назад</a>
-                <h1 className={s.productTitle}>{name}</h1>
+            <ContentHeader textButton="Назад" title={name}>
                 <p className={s.acticul}>Аартикул: <b>2388907</b></p>
-            </div>
+            </ContentHeader>
+
             <div className={s.product}>
                 <div className={s.imgWrapper}>
                     <img src={pictures} alt={`Изображение ${name}`} />

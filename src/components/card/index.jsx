@@ -2,6 +2,11 @@ import cn from 'classnames';
 import './styles.css';
 import { ReactComponent as LikeIcon } from '../../images/save.svg';
 import { calcDiscountPrice, isLiked } from '../../utils/products';
+import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { UserContext } from '../../contexts/current-user-context';
+import { CardsContext } from '../../contexts/card-context';
+import ContentLoader from 'react-content-loader';
 
 export function Card({
   name,
@@ -12,14 +17,12 @@ export function Card({
   pictures,
   tags,
   likes,
-  onProductLike,
   _id,
-  currentUser,
-  ...props
-}) {
+  ...props }) {
 
+  const { currentUser } = useContext(UserContext);
+  const { handleLike: onProductLike, isLoading } = useContext(CardsContext);
   const discount_price = calcDiscountPrice(price, discount);
-
   const like = isLiked(likes, currentUser?._id);
 
   function handleClickButtonLike() {
@@ -27,49 +30,61 @@ export function Card({
   }
 
   return (
-    <article className="card">
+    <>
+      {isLoading
+        ? <ContentLoader
+          speed={2}
+          width={186}
+          height={385}
+          viewBox="0 0 186 385"
+          backgroundColor="#d4cece"
+          foregroundColor="#dbdbdb"
+        >
+          <path d="M 0 0 h 185.6 v 187 H 0 z M 0 203 h 186 v 14 H 0 z M 0 233 h 186 v 56 H 0 z M 0 305 h 186 v 24 H 0 z" />
+          <rect x="0" y="345" rx="20" ry="20" width="121" height="40" />
+        </ContentLoader>
 
-      <div className="card__sticky card__sticky_type_top-left">
-        {discount !== 0 && (
-          <span className="card__discount">{`-${discount}%`}</span>
-        )}
-        {tags && tags.map((tagName, index) => (
-          <span key={index} className={cn('tag', { [`tag_type_${tagName}`]: true })}>
-            {tagName}
-          </span>
-        )
-        )}
-      </div>
-
-      <div className="card__sticky card__sticky_type_top-right">
-      <button className={cn('card__favorite', { 'card__favorite_is-active': like })} onClick={handleClickButtonLike}>
-          <LikeIcon className="card__favorite-icon" />
-          {/* <img src={likeIcon} alt="" className="card__favorite-icon" /> */}
-        </button>
-      </div>
-
-      <a href="#" className="card__link">
-        <img src={pictures} alt={name} className="card__image" />
-        <div className="card__desc">
-          {discount !== 0 ? (
-            <>
-              <span className="card__old-price">{price}&nbsp;₽</span>
-              <span className="card__price card__price_type_discount">
-                {discount_price}&nbsp;₽
+        : <article className="card">
+          <div className="card__sticky card__sticky_type_top-left">
+            {discount !== 0 && (
+              <span className="card__discount">{`-${discount}%`}</span>
+            )}
+            {tags && tags.map((tagName, index) => (
+              <span key={index} className={cn('tag', { [`tag_type_${tagName}`]: true })}>
+                {tagName}
               </span>
-            </>
-          ) : (
-            <span className="card__price">{price}&nbsp;₽</span>
-          )}
-          <span className="card__wight">{wight}</span>
-          <h3 className="card__name">{name}</h3>
-        </div>
-      </a>
-      
-      <a href="#" className="card__cart btn btn_type_primary">
-        В корзину
-      </a>
+            )
+            )}
+          </div>
+          <div className="card__sticky card__sticky_type_top-right">
+            <button className={cn('card__favorite', { 'card__favorite_is-active': like })} onClick={handleClickButtonLike}>
+              <LikeIcon className="card__favorite-icon" />
+            </button>
+          </div>
 
-    </article>
+          <Link to={`/product/${_id}`} className="card__link">
+            <img src={pictures} alt={name} className="card__image" />
+            <div className="card__desc">
+              {discount !== 0 ? (
+                <>
+                  <span className="card__old-price">{price}&nbsp;₽</span>
+                  <span className="card__price card__price_type_discount">
+                    {discount_price}&nbsp;₽
+                  </span>
+                </>
+              ) : (
+                <span className="card__price">{price}&nbsp;₽</span>
+              )}
+              <span className="card__wight">{wight}</span>
+              <h3 className="card__name">{name}</h3>
+            </div>
+          </Link>
+          <a href="#" className="card__cart btn btn_type_primary">В корзину</a>
+        </article>
+      }
+    </>
+
   );
 }
+
+
