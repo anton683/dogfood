@@ -1,6 +1,7 @@
 import cn from 'classnames';
-import './styles.css';
-import { ReactComponent as LikeIcon } from '../../images/save.svg';
+
+import "./styles.css";
+import { ReactComponent as LikeIcon } from "../../images/save.svg";
 import { calcDiscountPrice, isLiked } from '../../utils/products';
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
@@ -18,18 +19,22 @@ export function Card({
   tags,
   likes,
   _id,
-  ...props }) {
-
+  ...props
+}) {
+  const discount_price = calcDiscountPrice(price, discount)
   const { currentUser } = useContext(UserContext);
-  const { handleLike: onProductLike, isLoading } = useContext(CardsContext);
-  const discount_price = calcDiscountPrice(price, discount);
-  const like = isLiked(likes, currentUser?._id);
+
+  const { handleLike: onProductLike, isLoading } = useContext(CardsContext)
+  const like = isLiked(likes, currentUser?._id)
+
 
   function handleClickButtonLike() {
+    console.log(likes);
     onProductLike({ likes, _id })
   }
 
   return (
+
     <>
       {isLoading
         ? <ContentLoader
@@ -43,14 +48,13 @@ export function Card({
           <path d="M 0 0 h 185.6 v 187 H 0 z M 0 203 h 186 v 14 H 0 z M 0 233 h 186 v 56 H 0 z M 0 305 h 186 v 24 H 0 z" />
           <rect x="0" y="345" rx="20" ry="20" width="121" height="40" />
         </ContentLoader>
-
         : <article className="card">
           <div className="card__sticky card__sticky_type_top-left">
             {discount !== 0 && (
               <span className="card__discount">{`-${discount}%`}</span>
             )}
-            {tags && tags.map((tagName, index) => (
-              <span key={index} className={cn('tag', { [`tag_type_${tagName}`]: true })}>
+            {tags && tags.map(tagName => (
+              <span key={tagName} className={cn('tag', { [`tag_type_${tagName}`]: true })}>
                 {tagName}
               </span>
             )
@@ -79,12 +83,11 @@ export function Card({
               <h3 className="card__name">{name}</h3>
             </div>
           </Link>
-          <a href="#" className="card__cart btn btn_type_primary">В корзину</a>
+          <a href="#" className="card__cart btn btn_type_primary">
+            В корзину
+          </a>
         </article>
       }
     </>
-
   );
 }
-
-

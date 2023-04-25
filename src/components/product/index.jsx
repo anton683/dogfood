@@ -5,17 +5,19 @@ import s from './styles.module.css';
 import { ReactComponent as LikeIcon } from "../../images/save.svg";
 import truck from "../../images/truck.svg";
 import quality from "../../images/quality.svg";
-import { useNavigate } from 'react-router';
-import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useContext, useState } from 'react';
 import { UserContext } from '../../contexts/current-user-context';
 import { ContentHeader } from '../content-header';
+import Rating from '../rating';
+import FormReview from '../form-review';
 
 function Product({ onProductLike, _id, name, pictures, description, discount, price, likes = [], reviews }) {
     const { currentUser } = useContext(UserContext);
+    const [currentRating, setCurrentRating] = useState(5);
+    const navigate = useNavigate();
     const discount_price = calcDiscountPrice(price, discount);
     const like = isLiked(likes, currentUser?._id);
-    const navigate = useNavigate();
-
     function handleLikeClick() {
         onProductLike({ likes, _id })
     }
@@ -27,9 +29,9 @@ function Product({ onProductLike, _id, name, pictures, description, discount, pr
     return (
         <>
             <ContentHeader textButton="Назад" title={name}>
-                <p className={s.acticul}>Аартикул: <b>2388907</b></p>
+                <p className={s.acticul}>Артикул: <b>2388907</b></p>
+                <Rating currentRating={currentRating} />
             </ContentHeader>
-
             <div className={s.product}>
                 <div className={s.imgWrapper}>
                     <img src={pictures} alt={`Изображение ${name}`} />
@@ -114,6 +116,8 @@ function Product({ onProductLike, _id, name, pictures, description, discount, pr
                     </div>
                 </div>
             </div>
+
+            <FormReview title={`Отзыв о товаре ${name}`} />
         </>
     );
 }

@@ -12,6 +12,7 @@ function Accordion({ title, children }) {
     function toggleAccordionState() {
         setSelected(!selected)
     }
+
     return (
         <div className={cn(s.accordion, { [s.active]: selected })}>
             <button className={s.accordionButton} onClick={toggleAccordionState}>
